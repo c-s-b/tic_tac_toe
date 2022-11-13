@@ -14,7 +14,7 @@ module Instructions
   def self.input_instructions
     puts 'The three rows are labeled top, middle, and bottom'
     puts 'The columns are labed left, middle, and right'
-    puts 'To place your letter, type in the row, then the column, seperated by a comma.'
+    puts "To place your letter, type in the row, then the column, seperated by a '-'."
     puts 'For example, if you wanted to place a letter in the middle of the board, you would enter "middle-middle'
   end
 
