@@ -24,10 +24,11 @@ class Instructions
     until confirmation == 'y'
       puts 'No problem, type "y" when you are ready. or to exit the game type "quit"'
       confirmation = gets.chomp.downcase
-      return if cofirmation == 'quit' 
+      return if cofirmation == 'quit'
     end
   end
 end
+
 # create user player
 class Player
   attr_reader :name
@@ -52,12 +53,13 @@ class Player
     move
   end
 end
+
 # AI player - Single Purpose decide computers moves
 class Computer
   attr_reader :name
 
   def initialize
-    @name = "The Computer"
+    @name = 'The Computer'
   end
 
   def take_turn
@@ -106,6 +108,7 @@ class GameBoard
   end
 
   def check_for_winner
+    tie
     row_win
     column_win
     diagonal_win
@@ -141,6 +144,10 @@ class GameBoard
       @winner = 2
     end
   end
+
+  def tie
+    @winner = 3 unless board.flatten.any?(' ')
+  end
 end
 
 class Game
@@ -155,13 +162,13 @@ class Game
 
   def choose_first_player
     if rand(1..2) == 1
-        @player1 = Player.new
-        @player2 = Computer.new
-      else
-        @player1 = Computer.new
-        @player2 = Player.new
-      end
-      puts "#{@player1.name} is player 1!"
+      @player1 = Player.new
+      @player2 = Computer.new
+    else
+      @player1 = Computer.new
+      @player2 = Player.new
+    end
+    puts "#{@player1.name} is player 1!"
   end
 
   def request_turn(player, letter)
@@ -199,12 +206,13 @@ class Game
   def play_game
     while @game_board.check_for_winner.zero?
       @game_board.display_board
-      request_turn(@player1, 'X')      
+      puts 'player 1:'
+      request_turn(@player1, 'X')
+      @game_board.display_board
       break unless @game_board.check_for_winner.zero?
 
       puts "Player 2's turn"
       request_turn(@player2, 'O')
-
     end
     display_winner
   end
@@ -212,6 +220,8 @@ class Game
   def display_winner
     if @game_board.check_for_winner == 1
       puts 'Player 1 Wins!'
+    elsif @game_board.check_for_winner == 3
+      puts 'Its a tie game!'
     else
       puts 'Player 2 Wins!'
     end
