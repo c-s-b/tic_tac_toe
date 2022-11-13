@@ -113,9 +113,9 @@ class GameBoard
 
   def check_for_winner
     check_win_conditions
+    @winner = 3 unless board.flatten.any?(' ')
     @winner = 1 if win_conditions.values.flatten(1).any?(%w[X X X])
     @winner = 2 if win_conditions.values.flatten(1).any?(%w[O O O])
-    @winner = 3 unless board.flatten.any?(' ')
     @winner
   end
 
