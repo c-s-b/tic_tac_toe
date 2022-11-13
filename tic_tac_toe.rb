@@ -105,9 +105,7 @@ class GameBoard
     puts ''
     board.each_with_index do |row, index|
       puts "#{row[0]} | #{row[1]} | #{row[2]}"
-      if index < 2
-        puts '---------'
-      end
+      puts '---------' if index < 2
     end
     puts ''
   end
