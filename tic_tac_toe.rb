@@ -102,15 +102,6 @@ class GameBoard
     @win_conditions = { diagonal_win: [], column_win: [], row_win: [] }
   end
 
-  def check_win_conditions
-    win_conditions[:diagonal_win] = [[board[0][0], board[1][1], board[2][2]], [board[0][2], board[1][1], board[2][0]]]
-    win_conditions[:column_win] = [[board[0][0], board[1][0], board[2][0]],
-                                   [board[0][1], board[1][1], board[2][1]],
-                                   [board[0][2], board[1][2], board[2][2]]],
-    win_conditions[:row_win] = board.map { |row| row }
-    win_conditions
-  end
-
   def display_board
     puts ''
     board.each_with_index do |row, index|
@@ -130,14 +121,19 @@ class GameBoard
 
   private
 
+  def check_win_conditions
+    win_conditions[:diagonal_win] = [[board[0][0], board[1][1], board[2][2]], [board[0][2], board[1][1], board[2][0]]]
+    win_conditions[:column_win] = [[board[0][0], board[1][0], board[2][0]],
+                                   [board[0][1], board[1][1], board[2][1]],
+                                   [board[0][2], board[1][2], board[2][2]]]
+    win_conditions[:row_win] = board.map { |row| row }
+    win_conditions
+  end
+
   def row_win
-    board.each do |row|
-      if row.all?('X')
-        @winner = 1
-      elsif row.all?('O')
-        @winner = 2
-      end
-    end
+    check_win_conditions
+    @winner = 1 if win_conditions[:row_win].any?(['X','X','X'])
+    @winner = 2 if win_conditions[:row_win].any?(['O','O','O'])
   end
 
   def diagonal_win
@@ -148,11 +144,8 @@ class GameBoard
 
   def column_win
     check_win_conditions
-    if win_conditions[:column_win].any?(['X','X','X'])
-      @winner = 1
-    elsif win_conditions[:column_win].any?(['O','O','O'])
-      @winner = 2
-    end
+    @winner = 1 if win_conditions[:column_win].any?(['X','X','X'])
+    @winner = 2 if win_conditions[:column_win].any?(['O','O','O'])
   end
 
   def tie
