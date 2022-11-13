@@ -35,9 +35,8 @@ end
 class Player
   attr_reader :name
 
-  def initialize
-    puts 'Please enter your name'
-    @name = gets.chomp
+  def initialize(name)
+    @name = name
   end
 
   def take_turn
@@ -159,20 +158,33 @@ end
 class Game
   def initialize
     Instructions.start
-    choose_first_player
+    create_players
     @game_board = GameBoard.new
     play_game
   end
 
+  def create_players
+    puts 'Who is player 1?'
+    user1 = Player.new(gets.chomp)
+    puts "Who is player 2? If playing single-player, please enter 'computer'."
+    user2_name = gets.chomp.downcase
+    user2 = if user2_name == 'computer'
+              Computer.new
+            else
+              Player.new(user2_name)
+            end
+    choose_first_player([user1, user2])
+  end
+
   private
 
-  def choose_first_player
+  def choose_first_player(users)
     if rand(1..2) == 1
-      @player1 = Player.new
-      @player2 = Computer.new
+      @player1 = users[0]
+      @player2 = users[1]
     else
-      @player1 = Computer.new
-      @player2 = Player.new
+      @player1 = users[1]
+      @player2 = users[0]
     end
     puts "#{@player1.name} is player 1!"
   end
@@ -227,11 +239,11 @@ class Game
   def display_winner
     case @game_board.check_for_winner
     when 1
-      puts "#{@player1.name} Wins!"
+      puts "#{@player1.name.capitalize} Wins!"
     when 3
       puts 'Its a tie game!'
     else
-      puts "#{@player2.name} Wins!"
+      puts "#{@player2.name.capitalize} Wins!"
     end
   end
 end
