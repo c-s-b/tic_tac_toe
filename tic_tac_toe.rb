@@ -1,6 +1,6 @@
 # initialize a new game
 
-class Instructions
+module Instructions
   def self.introduction
     puts 'Welcome To Tic-Tac-Toe!'
     puts 'In case you need a refresher on how to play:'
@@ -11,9 +11,9 @@ class Instructions
 
   def self.input_instructions
     puts 'The three rows are labeled top, middle, and bottom'
-    puts 'The columns are labed left, middle, an right'
+    puts 'The columns are labed left, middle, and right'
     puts 'To place your letter, type in the row, then the column, seperated by a comma.'
-    puts 'For example, if you wanted to place a letter in the middle of the board, tou would enter "middle-middle'
+    puts 'For example, if you wanted to place a letter in the middle of the board, you would enter "middle-middle'
   end
 
   def self.start
@@ -45,7 +45,7 @@ class Player
 
   def check_input(move)
     until (move[0] == 'top' || move[0] == 'middle' || move[0] == 'bottom') &&
-          (move[1] == 'left' || move[1] == 'middle' || move[1] == 'right') 
+          (move[1] == 'left' || move[1] == 'middle' || move[1] == 'right')
       puts 'Please try again. As a reminder here are the input instructions:'
       Instructions.input_instructions
       move = gets.chomp.downcase.split('-')
@@ -94,11 +94,21 @@ class Computer
 end
 
 class GameBoard
-  attr_accessor :board, :winner
+  attr_accessor :board, :winner, :win_conditions
 
   def initialize
     @board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
     @winner = 0
+    @win_conditions = { diagonal_win: [], column_win: [], row_win: [] }
+  end
+
+  def check_win_conditions
+    win_conditions[:diagonal_win] = [[board[0][0], board[1][1], board[2][2]], [board[0][2], board[1][1], board[2][0]]]
+    win_conditions[:column_win] = [[board[0][0], board[1][0], board[2][0]],
+                                   [board[0][1], board[1][1], board[2][1]],
+                                   [board[0][2], board[1][2], board[2][2]]],
+    win_conditions[:row_win] = board.map { |row| row }
+    win_conditions
   end
 
   def display_board
@@ -131,19 +141,16 @@ class GameBoard
   end
 
   def diagonal_win
-    win_conditions = [[board[0][0], board[1][1], board[2][2]], [board[0][2], board[1][1], board[2][0]]]
-    @winner = 1 if win_conditions.any?(['X','X','X'])
-    @winner = 2 if win_conditions.any?(['O','O','O'])
+    check_win_conditions
+    @winner = 1 if win_conditions[:diagonal_win].any?(['X','X','X'])
+    @winner = 2 if win_conditions[:diagonal_win].any?(['O','O','O'])
   end
 
   def column_win
-    if [board[0][0], board[1][0], board[2][0]].all?("X") ||
-       [board[0][1], board[1][1], board[2][1]].all?("X") ||
-       [board[0][2], board[1][2], board[2][2]].all?("X")
+    check_win_conditions
+    if win_conditions[:column_win].any?(['X','X','X'])
       @winner = 1
-    elsif [board[0][0], board[1][0], board[2][0]].all?("O") ||
-          [board[0][1], board[1][1], board[2][1]].all?("O") ||
-          [board[0][2], board[1][2], board[2][2]].all?("O")
+    elsif win_conditions[:column_win].any?(['O','O','O'])
       @winner = 2
     end
   end
