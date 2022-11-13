@@ -26,7 +26,7 @@ module Instructions
     until confirmation == 'y'
       puts 'No problem, type "y" when you are ready. or to exit the game type "quit"'
       confirmation = gets.chomp.downcase
-      return if cofirmation == 'quit'
+      return 'quit' if confirmation == 'quit'
     end
   end
 end
@@ -70,27 +70,25 @@ class Computer
   private
 
   def decide_row
-    @row =
-      case rand(1..3)
-      when 1
-        'top'
-      when 2
-        'middle'
-      when 3
-        'bottom'
-      end
+    case rand(1..3)
+    when 1
+      'top'
+    when 2
+      'middle'
+    when 3
+      'bottom'
+    end
   end
 
   def decide_column
-    @column =
-      case rand(1..3)
-      when 1
-        'left'
-      when 2
-        'middle'
-      when 3
-        'right'
-      end
+    case rand(1..3)
+    when 1
+      'left'
+    when 2
+      'middle'
+    when 3
+      'right'
+    end
   end
 end
 
@@ -114,11 +112,9 @@ class GameBoard
   end
 
   def check_for_winner
-    check_win_conditions
-    tie
-    row_win
-    column_win
-    diagonal_win
+    @winner = 1 if win_conditions.values.flatten(1).any?(%w[X X X])
+    @winner = 2 if win_conditions.values.flatten(1).any?(%w[O O O])
+    @winner = 3 unless board.flatten.any?(' ')
     @winner
   end
 
@@ -127,37 +123,18 @@ class GameBoard
   # unable to fix assignment complexity w/o converting to multiple assignment methods
   # which seems more convoluted, not less
   def check_win_conditions
-    win_conditions[:diagonal_win] = [[board[0][0], board[1][1], board[2][2]], [board[0][2], board[1][1], board[2][0]]]
-    win_conditions[:column_win] = [[board[0][0], board[1][0], board[2][0]],
-                                   [board[0][1], board[1][1], board[2][1]],
-                                   [board[0][2], board[1][2], board[2][2]]]
+    win_conditions[:diagonal_win] = [[board[0][0], board[1][1], board[2][2]],
+                                     [board[0][2], board[1][1], board[2][0]]]
+    win_conditions[:column_win] = board.transpose
     win_conditions[:row_win] = board.map { |row| row }
-  end
-
-  def row_win
-    @winner = 1 if win_conditions[:row_win].any?(%w[X X X])
-    @winner = 2 if win_conditions[:row_win].any?(%w[O O O])
-  end
-
-  def diagonal_win
-    @winner = 1 if win_conditions[:diagonal_win].any?(%w[X X X])
-    @winner = 2 if win_conditions[:diagonal_win].any?(%w[O O O])
-  end
-
-  def column_win
-    @winner = 1 if win_conditions[:column_win].any?(%w[X X X])
-    @winner = 2 if win_conditions[:column_win].any?(%w[O O O])
-  end
-
-  def tie
-    @winner = 3 unless board.flatten.any?(' ')
   end
 end
 
 # needed to control game flow
 class Game
   def initialize
-    Instructions.start
+    return if Instructions.start == 'quit'
+
     create_players
     @game_board = GameBoard.new
     play_game
@@ -204,7 +181,7 @@ class Game
   # dont see how I could make this simpler
   def convert_turn_to_board_space(turn)
     case turn[0]
-    when 'top'
+    when 'top' 
       turn[0] = 0
     when 'middle'
       turn[0] = 1
