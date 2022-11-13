@@ -1,5 +1,7 @@
-# initialize a new game
+# /home/notcominghome/repos/tic_tac_toe
+# frozen_string_literal: true
 
+# print instructions and ask to begin game - module because no need for instance
 module Instructions
   def self.introduction
     puts 'Welcome To Tic-Tac-Toe!'
@@ -29,7 +31,7 @@ module Instructions
   end
 end
 
-# create user player
+# represents user
 class Player
   attr_reader :name
 
@@ -54,7 +56,7 @@ class Player
   end
 end
 
-# AI player - Single Purpose decide computers moves
+# represents AI, not subclass of player because all methods would need override anyway
 class Computer
   attr_reader :name
 
@@ -93,6 +95,7 @@ class Computer
   end
 end
 
+# instance of board, checks win conditions via index of 2d array on board and displays board
 class GameBoard
   attr_accessor :board, :winner, :win_conditions
 
@@ -112,6 +115,7 @@ class GameBoard
   end
 
   def check_for_winner
+    check_win_conditions
     tie
     row_win
     column_win
@@ -121,31 +125,29 @@ class GameBoard
 
   private
 
+  # unable to fix assignment complexity w/o converting to multiple assignment methods
+  # which seems more convoluted, not less
   def check_win_conditions
     win_conditions[:diagonal_win] = [[board[0][0], board[1][1], board[2][2]], [board[0][2], board[1][1], board[2][0]]]
     win_conditions[:column_win] = [[board[0][0], board[1][0], board[2][0]],
                                    [board[0][1], board[1][1], board[2][1]],
                                    [board[0][2], board[1][2], board[2][2]]]
     win_conditions[:row_win] = board.map { |row| row }
-    win_conditions
   end
 
   def row_win
-    check_win_conditions
-    @winner = 1 if win_conditions[:row_win].any?(['X','X','X'])
-    @winner = 2 if win_conditions[:row_win].any?(['O','O','O'])
+    @winner = 1 if win_conditions[:row_win].any?(%w[X X X])
+    @winner = 2 if win_conditions[:row_win].any?(%w[O O O])
   end
 
   def diagonal_win
-    check_win_conditions
-    @winner = 1 if win_conditions[:diagonal_win].any?(['X','X','X'])
-    @winner = 2 if win_conditions[:diagonal_win].any?(['O','O','O'])
+    @winner = 1 if win_conditions[:diagonal_win].any?(%w[X X X])
+    @winner = 2 if win_conditions[:diagonal_win].any?(%w[O O O])
   end
 
   def column_win
-    check_win_conditions
-    @winner = 1 if win_conditions[:column_win].any?(['X','X','X'])
-    @winner = 2 if win_conditions[:column_win].any?(['O','O','O'])
+    @winner = 1 if win_conditions[:column_win].any?(%w[X X X])
+    @winner = 2 if win_conditions[:column_win].any?(%w[O O O])
   end
 
   def tie
@@ -153,6 +155,7 @@ class GameBoard
   end
 end
 
+# needed to control game flow
 class Game
   def initialize
     Instructions.start
@@ -186,6 +189,7 @@ class Game
     end
   end
 
+  # dont see how I could make this simpler
   def convert_turn_to_board_space(turn)
     case turn[0]
     when 'top'
