@@ -102,9 +102,14 @@ class GameBoard
   end
 
   def display_board
-    board.each do |row|
+    puts ''
+    board.each_with_index do |row, index|
       puts "#{row[0]} | #{row[1]} | #{row[2]}"
+      if index < 2
+        puts '---------'
+      end
     end
+    puts ''
   end
 
   def check_for_winner
@@ -206,24 +211,25 @@ class Game
   def play_game
     while @game_board.check_for_winner.zero?
       @game_board.display_board
-      puts 'player 1:'
+      puts "#{@player1.name.upcase}'s TURN"
       request_turn(@player1, 'X')
       @game_board.display_board
       break unless @game_board.check_for_winner.zero?
 
-      puts "Player 2's turn"
+      puts "#{@player2.name.upcase}'s TURN"
       request_turn(@player2, 'O')
     end
     display_winner
   end
 
   def display_winner
-    if @game_board.check_for_winner == 1
-      puts 'Player 1 Wins!'
-    elsif @game_board.check_for_winner == 3
+    case @game_board.check_for_winner
+    when 1
+      puts "#{@player1.name} Wins!"
+    when 3
       puts 'Its a tie game!'
     else
-      puts 'Player 2 Wins!'
+      puts "#{@player2.name} Wins!"
     end
   end
 end
