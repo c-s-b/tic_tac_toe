@@ -112,6 +112,7 @@ class GameBoard
   end
 
   def check_for_winner
+    check_win_conditions
     @winner = 1 if win_conditions.values.flatten(1).any?(%w[X X X])
     @winner = 2 if win_conditions.values.flatten(1).any?(%w[O O O])
     @winner = 3 unless board.flatten.any?(' ')
@@ -123,8 +124,7 @@ class GameBoard
   # unable to fix assignment complexity w/o converting to multiple assignment methods
   # which seems more convoluted, not less
   def check_win_conditions
-    win_conditions[:diagonal_win] = [[board[0][0], board[1][1], board[2][2]],
-                                     [board[0][2], board[1][1], board[2][0]]]
+    win_conditions[:diagonal_win] = [[board[0][0], board[1][1], board[2][2]], [board[0][2], board[1][1], board[2][0]]]
     win_conditions[:column_win] = board.transpose
     win_conditions[:row_win] = board.map { |row| row }
   end
@@ -180,23 +180,16 @@ class Game
 
   # dont see how I could make this simpler
   def convert_turn_to_board_space(turn)
-    case turn[0]
-    when 'top' 
-      turn[0] = 0
-    when 'middle'
-      turn[0] = 1
-    when 'bottom'
-      turn[0] = 2
+    turn.each_with_index do |_, index|
+      turn[index] = case turn[index]
+                    when 'top', 'left'
+                      0
+                    when 'middle'
+                      1
+                    else
+                      turn[index] = 2
+                    end
     end
-    case turn[1]
-    when 'left'
-      turn[1] = 0
-    when 'middle'
-      turn[1] = 1
-    when 'right'
-      turn[1] = 2
-    end
-    turn
   end
 
   def play_game
